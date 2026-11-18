@@ -1,10 +1,22 @@
-//! Integration tests for SigmaOS-arch-shader-audit-kernel.
+// Integration test for SigmaOS-arch-shader-audit-kernel
+// Verifies the crate builds and links as a dependency.
 
-use sigmaos_arch_shader_audit_kernel_lib::Component;
+use sigmaos_arch_shader_audit_kernel::{ShaderManager, ShaderSource, ShaderType};
 
 #[test]
-fn component_initialises_and_runs() {
-    let mut c = Component::new();
-    c.init().expect("init should succeed");
-    c.run().expect("run should succeed after init");
+fn crate_links_and_runs() {
+    // Arrange
+    let mut mgr = ShaderManager::new();
+    let source = ShaderSource::new(
+        "audit-vertex",
+        ShaderType::Vertex,
+        "void main() { gl_Position = vec4(0.0); }"
+    );
+
+    // Act
+    let res = mgr.compile(source);
+
+    // Assert
+    assert!(res.is_ok());
+    assert_eq!(mgr.list_shaders().len(), 1);
 }
